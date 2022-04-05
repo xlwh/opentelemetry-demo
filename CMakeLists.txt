@@ -4,28 +4,19 @@ project(opentelemetry_demo)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_C_COMPILER "/usr/bin/clang")
 set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
-
 set(THIRDPARTY_DIR "/Users/zhb/workspace/opentelemetry-demo/thirdparty/installed")
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set(PIC_LIB_PATH "${THIRDPARTY_DIR}")
-
-# Add common cmake prefix path and link library path
-list(APPEND CMAKE_PREFIX_PATH ${THIRDPARTY_DIR}/lib64/cmake)
-link_directories(${THIRDPARTY_DIR}/lib64)
-
-add_library(opentelemetry-cpp STATIC IMPORTED)
-set_target_properties(opentelemetry-cpp PROPERTIES IMPORTED_LOCATION ${THIRDPARTY_DIR}/lib64/libhttp_client_curl.a)
-set_target_properties(opentelemetry-cpp PROPERTIES IMPORTED_LOCATION ${THIRDPARTY_DIR}/lib64/libopentelemetry_common.a)
-set_target_properties(opentelemetry-cpp PROPERTIES IMPORTED_LOCATION ${THIRDPARTY_DIR}/lib64/libopentelemetry_trace.a)
-set_target_properties(opentelemetry-cpp PROPERTIES IMPORTED_LOCATION ${THIRDPARTY_DIR}/lib64/libopentelemetry_metrics.a)
-set_target_properties(opentelemetry-cpp PROPERTIES IMPORTED_LOCATION ${THIRDPARTY_DIR}/lib64/libopentelemetry_exporter_ostream_span.a)
-set_target_properties(opentelemetry-cpp PROPERTIES IMPORTED_LOCATION ${THIRDPARTY_DIR}/lib64/libopentelemetry_resources.a)
-
-#target_link_libraries(opentelemetry-cpp)
 
 # Set include dirs
-include_directories(
-        ${THIRDPARTY_DIR}/include
-)
+include_directories(${THIRDPARTY_DIR}/include)
+
+find_library(LIB_OPENTELEMETRY_TRACE opentelemetry_trace HINTS ${THIRDPARTY_DIR}/lib)
+add_library(opentelemetry_trace STATIC IMPORTED GLOBAL)
+set_target_properties(opentelemetry_trace PROPERTIES IMPORTED_LOCATION "${LIB_OPENTELEMETRY_TRACE}")
+
+find_library(LIB_OPENTELEMETRY_COMMON opentelemetry_common HINTS ${THIRDPARTY_DIR}/lib)
+add_library(opentelemetry_common STATIC IMPORTED GLOBAL)
+set_target_properties(opentelemetry_common PROPERTIES IMPORTED_LOCATION "${LIB_OPENTELEMETRY_COMMON}")
 
 add_executable(opentelemetry_demo main.cpp)
+target_link_libraries(opentelemetry_demo PUBLIC opentelemetry_trace)
+target_link_libraries(opentelemetry_demo PUBLIC opentelemetry_common)
