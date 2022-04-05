@@ -1,29 +1,14 @@
 #include <iostream>
 
-#include "opentelemetry/trace/provider.h"
-#include "opentelemetry/exporters/ostream/span_exporter.h"
-#include "opentelemetry/sdk/trace/processor.h"
-#include "opentelemetry/sdk/trace/simple_processor.h"
+#include "tracer.h"
 
-//namespace alias used in sample code here.
-namespace sdktrace   = opentelemetry::sdk::trace;
-namespace trace     = opentelemetry::trace;
-namespace nostd     = opentelemetry::nostd;
+using span = opentelemetry::nostd::shared_ptr<opentelemetry::trace::Span>;
 
 int main() {
-    // logging exporter
-    auto exporter =
-            std::unique_ptr<sdktrace::SpanExporter>(new opentelemetry::exporter::trace::OStreamSpanExporter);
-    auto processor = std::unique_ptr<sdktrace::SpanProcessor>(
-            new sdktrace::SimpleSpanProcessor(std::move(exporter)));
-    auto provider = opentelemetry::trace::Provider::GetTracerProvider();
-    auto tracer = provider->GetTracer("foo_library", "1.0.0");
-
-
-    auto span = tracer->StartSpan("HandleRequest");
-    span->AddEvent("cout");
+    std::unique_ptr<Tracer> tracer = std::make_unique<Tracer>("demo");
+    auto span = tracer->start_trace("demo");
+    tracer->add_span("cout", span);
     std::cout << "Hello, World!" << std::endl;
-    span->End();
-
+    tracer->shutdown();
     return 0;
 }

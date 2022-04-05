@@ -21,7 +21,7 @@ set_target_properties(opentelemetry_exporter_ostream_span PROPERTIES IMPORTED_LO
 add_library(opentelemetry_resources STATIC IMPORTED GLOBAL)
 set_target_properties(opentelemetry_resources PROPERTIES IMPORTED_LOCATION ${THIRDPARTY_DIR}/lib/libopentelemetry_resources.a)
 
-add_executable(opentelemetry_demo main.cpp trace.cpp trace.h)
+add_executable(opentelemetry_demo main.cpp tracer.cpp tracer.h)
 target_link_libraries(opentelemetry_demo PUBLIC opentelemetry_trace)
 target_link_libraries(opentelemetry_demo PUBLIC opentelemetry_common)
 target_link_libraries(opentelemetry_demo PUBLIC opentelemetry_exporter_ostream_span)
